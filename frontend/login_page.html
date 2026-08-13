@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function LoginPage() {
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        console.log('Connexion réussie :', result);
+                        window.location.href = "/exercices";
+                    } else {
+                        alert(result.error || 'Identifiants incorrects');
+                    }
+                } catch (error) {
+                    console.error('Erreur réseau ou serveur :', error);
+                }
+            };
+
+            return (
+                <div className="login-card">
+                    <h1>Connexion</h1>
+                    <form onSubmit={handleSubmit}>
+                        <input type="text" name="username" className="input-field" placeholder="Nom d'utilisateur" required />
+                        <br />
+                        <input type="password" name="password" className="input-field" placeholder="Mot de passe" required />
+                        <br />
+                        <button type="submit" className="btn-primary">Se connecter</button>
+                    </form>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<LoginPage />);
+    </script>
+</body>
+
+</html>

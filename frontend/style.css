@@ -1,0 +1,63 @@
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.login-card {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: rgba(15, 23, 42, 0.5);
+    border: 1px solid #334155;
+    border-radius: 0.75rem;
+    color: white;
+    margin-top: 0.5rem;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 0.875rem;
+    background-color: #4f46e5;
+    color: white;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 1.5rem;
+}
+
+.btn-primary:hover {
+    background-color: #6366f1;
+}
+
+.navbar {
+    background-color: #1e293b;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #334155;
+}
+
+.nav-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: #f8fafc;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #6366f1;
+}
