@@ -27,18 +27,22 @@
         }
 
 
-
-        // Composant Principal
         function Exercices() {
+	    const gotoexo = (index) => {window.location.href = `/exercices/${index}`}
+	    const exercices = await fetch("http://localhost:3000/api/getExercices");
             return (
-                <div>
-                    <Navbar />
-                    <main className="container">
-                        <Exercices />
-                    </main>
-                </div>
-            );
-        }
+       	    <div>
+	      <Navbar />
+	      <main className="container">
+	      <h1>Exercices :</h1>
+	      <ul>
+		{exercices.map((exercices, index) => <li key={index}>{exerices.name}</li>)
+		<button onClick={exerices(index)>Accéder</button>}}
+	      </ul>
+	      </main>
+	      </div>
+	      )
+	}
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<Exercices />);
