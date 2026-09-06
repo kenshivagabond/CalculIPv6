@@ -7,9 +7,9 @@ class UserDao extends User {
 
     async connection(username, password) {
         const query = "SELECT * FROM users WHERE username = ?";
-        const [rows] = await db.execute(query, username);
-        if (rows && rows.length > 0) {
-            const user = rows[0];
+        
+	const user = await db.get(query, [username]);
+        if (user) {
             const isMatch = await bcrypt.compare(password, user.hashed_password);
             if (isMatch) {
                 return user;

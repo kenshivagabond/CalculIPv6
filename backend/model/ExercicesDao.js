@@ -7,8 +7,8 @@ class ExercicesDao extends Exercice {
 
 
     async getAllExercices() {
-        const [result] = await db.query('SELECT * FROM exercices')
-        return result;
+        const res = await db.all('SELECT * FROM exercice');
+	return res;
     }
 
     async IPv6isCorrect(ipv6Address) {

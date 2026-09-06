@@ -24,7 +24,7 @@ async function initDB() {
     FOREIGN KEY (id_exercice) REFERENCES exercices(id)
     )`
 
-    const insert_admin = `INSERT INTO users (username, email, hashed_password, role) VALUES ('admin', 'kenzo.fillonneau@edu.univ-paris13.fr', '$2a$12$h2DtIreZfiyWcEASlmFL4O2kso7AnEp3K1VgwnVCrEI9ZPMF/j0tO', 'admin')`;
+    
 
     await db.run(insert_admin);
 }
