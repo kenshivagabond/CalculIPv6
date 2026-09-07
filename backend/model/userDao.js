@@ -6,10 +6,12 @@ class UserDao extends User {
 
 
     async connection(username, password) {
-        const query = "SELECT * FROM users WHERE username = ?";
         
-	const user = await db.get(query, [username]);
-        if (user) {
+	const users = await db.query("SELECT * FROM users WHERE username = ?", [username]);
+	
+        if (users && users.length > 0) {
+	    const user = users[0][0];
+	    console.log(user.hashed_password);
             const isMatch = await bcrypt.compare(password, user.hashed_password);
             if (isMatch) {
                 return user;

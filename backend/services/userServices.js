@@ -10,9 +10,6 @@ class userServices {
         return this.userDAO.connection(username, password);
     }
 
-
-
-
-
-
 }
+
+module.exports = new userServices();
