@@ -10,6 +10,10 @@ class ExercicesServices {
         return this.exercicesDAO.getAllExercices();
     }
 
+    async progress(user_id){
+	return this.exercicesDAO.progress(user_id);
+    }
+
 
 
 

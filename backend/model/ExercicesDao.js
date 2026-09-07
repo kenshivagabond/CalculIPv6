@@ -12,6 +12,13 @@ class ExercicesDao {
         return res[0];
     }
 
+    async progress(id_utilisateur) {
+	const res = await db.query('SELECT * FROM progress WHERE id_utilisateur = ?', [id_utilisateur]);
+	console.log(res[0][0]);
+	return res[0][0];
+	
+    }
+
     async IPv6isCorrect(ipv6Address) {
         return IPv6Address.isValid(ipv6Address);
     }
