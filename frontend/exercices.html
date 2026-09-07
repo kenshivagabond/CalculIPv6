@@ -31,8 +31,14 @@
 
 
         function Exercices() {
+	    const [exercices, setExercices] = React.useState([]); // de ce que j'ai compris de ce truc il est question de mettre la page en continue à jour setExercices modifie en continue (et il faut l'utiliser pour toute modif)
 	    const gotoexo = (index) => {window.location.href = `/exercices/${index}`}
-	    const exercices = await fetch("http://localhost:3000/api/getExercices");
+
+	    React.useEffect(() => { fetch("http://localhost:3000/api/getExercices").then((responses => response.json())
+	    .then((data) => { setExercices(data);}) // utilisation de setExercices ici
+	    .catch((error) => console.log(error));
+	    
+
             return (
        	    <div>
 	      <Navbar />
