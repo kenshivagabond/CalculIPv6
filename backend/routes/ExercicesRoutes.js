@@ -2,7 +2,7 @@ const ExercicesServices = require('../services/ExercicesServices');
 const express = require("express");
 const router = express.Router();
 
-router.get('/api/getAllExercices', async (req, res) => {
+router.get('/getAllExercices', async (req, res) => {
     const exercices = await ExercicesServices.getAllExercices();
     if (exercices) {
         res.json(user);

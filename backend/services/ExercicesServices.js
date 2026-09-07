@@ -3,11 +3,11 @@ const exerciesDAO = require('../model/ExercicesDao');
 class exerciesServices {
 
     constructor() {
-        this.exerciesDAO = exerciesDAO;
+        this.exercicesDAO = exercicesDAO();
     }
 
     async getAllExercices(){
-        return exerciesDAO.getAllExercices;
+        return exercicesDAO.getAllExercices();
     }
 
 

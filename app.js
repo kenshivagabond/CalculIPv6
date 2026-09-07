@@ -12,7 +12,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'frontend')));
 
 const authRouter = require('./backend/routes/userRoutes');
+const ExercicesRouter = require('./backend/routes/ExercicesRoutes')
 app.use('/api',authRouter);
+app.use('/api',ExercicesRouter);
 
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'login_page.html'));
