@@ -14,6 +14,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
+	import { bake_cookie , read_cookies , delete_cookie } from 'sfcookies';
         function LoginPage() {
 
             const guest = () => {window.location.href = "/exercices"};
@@ -36,7 +37,8 @@
                     const result = await response.json();
 
                     if (response.ok) {
-                        console.log('Connexion réussie :', result);
+                        console.log(result);
+			sessionStorage.setItem('user',JSON.stringify(result));
                         window.location.href = "/exercices";
                     } else {
                         alert(result.error || 'Identifiants incorrects');

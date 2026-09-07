@@ -14,13 +14,16 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // Composant Navigation Bar
+
+	const user = JSON.parse(sessionStorage.getItem('user'));
         function Navbar() {
             return (
                 <nav className="navbar">
                     <ul className="nav-links">
                         <li><a href="/exercices">Exercices</a></li>
-                        <li><a href="/profile">Profil</a></li>
+			{ user ? (
+                        <li><a href="/profile">Profil</a></li> ) : (
+			<li><a href="/login_page">Se connecter</a></li>)}
                     </ul>
                 </nav>
             );
