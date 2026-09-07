@@ -1,13 +1,13 @@
-const exerciesDAO = require('../model/ExercicesDao');
+const exercicesDAO = require('../model/ExercicesDao');
 
-class exerciesServices {
+class ExercicesServices {
 
     constructor() {
-        this.exercicesDAO = exercicesDAO();
+        this.exercicesDAO = exercicesDAO;
     }
 
     async getAllExercices(){
-        return exercicesDAO.getAllExercices();
+        return this.exercicesDAO.getAllExercices();
     }
 
 
@@ -15,7 +15,7 @@ class exerciesServices {
 
 
 
-}⏎
+}
 
-module.exports = new exericesServices();
+module.exports = new ExercicesServices();
 

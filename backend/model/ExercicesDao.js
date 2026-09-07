@@ -3,12 +3,13 @@ const Exercice = require("./Exercices.js")
 const IPv6Address = require('ip-address').Address6;
 const ipaddr = require('ipaddr.js');
 
-class ExercicesDao extends Exercice {
+class ExercicesDao {
 
 
     async getAllExercices() {
-        const res = await db.all('SELECT * FROM exercice');
-	return res;
+        const res = await db.query('SELECT * FROM exercices');
+        console.log(res[0]);
+        return res[0];
     }
 
     async IPv6isCorrect(ipv6Address) {

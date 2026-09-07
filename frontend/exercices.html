@@ -48,7 +48,9 @@
                 <ul>
                     {exercices.map((item, index) => (
                         <li key={index}>
-                            <span>{item.name}</span>
+                            <h2>{item.title}</h2>
+                            <br />
+                            <span>{item.description}</span>
                             <button onClick={() => gotoexo(index)}>Accéder</button>
                         </li>
                     	))}
