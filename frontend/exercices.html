@@ -23,7 +23,7 @@
                         <li><a href="/exercices">Exercices</a></li>
 			{ user ? (
                         <li><a href="/profile">Profil</a></li> ) : (
-			<li><a href="/login_page">Se connecter</a></li>)}
+			<li><a href="/login">Se connecter</a></li>)}
                     </ul>
                 </nav>
             );
@@ -51,15 +51,17 @@
                             <span>{item.name}</span>
                             <button onClick={() => gotoexo(index)}>Accéder</button>
                         </li>
-                    ))}
-                </ul>
-            </main>
-        </div>
-    );
-}
+                    	))}
+                	</ul>
+           	 </main>
+        	</div>
+     	);
+     }
 
+     const root = ReactDOM.createRoot(document.getElementById('root'));
+     root.render(<Exercices />);
 
-
+    </script>
 </body>
 
 </html>
