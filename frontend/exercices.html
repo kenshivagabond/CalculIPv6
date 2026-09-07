@@ -29,33 +29,37 @@
             );
         }
 
+	function Exercices() {
+    const [exercices, setExercices] = React.useState([]); // de ce que j'ai compris de ce truc il est question de mettre la page en continue à jour setExercices modifie en continue (et il faut l'utiliser pour toute modif)
+    const gotoexo = (index) => {window.location.href = `/exercices/${index}`}
 
-        function Exercices() {
-	    const [exercices, setExercices] = React.useState([]); // de ce que j'ai compris de ce truc il est question de mettre la page en continue à jour setExercices modifie en continue (et il faut l'utiliser pour toute modif)
-	    const gotoexo = (index) => {window.location.href = `/exercices/${index}`}
+    React.useEffect(() => {
+        fetch("http://localhost:3000/api/getExercices")
+            .then((response) => response.json())
+            .then((data) => { setExercices(data); }) // utilisation de setExercices ici
+            .catch((error) => console.log(error));
+    }, []);
 
-	    React.useEffect(() => { fetch("http://localhost:3000/api/getExercices").then((responses => response.json())
-	    .then((data) => { setExercices(data);}) // utilisation de setExercices ici
-	    .catch((error) => console.log(error));
-	    
+    return (
+        <div>
+            <Navbar />
+            <main className="container">
+                <h1>Exercices :</h1>
+                <ul>
+                    {exercices.map((item, index) => (
+                        <li key={index}>
+                            <span>{item.name}</span>
+                            <button onClick={() => gotoexo(index)}>Accéder</button>
+                        </li>
+                    ))}
+                </ul>
+            </main>
+        </div>
+    );
+}
 
-            return (
-       	    <div>
-	      <Navbar />
-	      <main className="container">
-	      <h1>Exercices :</h1>
-	      <ul>
-		{exercices.map((exercices, index) => <li key={index}>{exerices.name}</li>)
-		<button onClick={exerices(index)>Accéder</button>}}
-	      </ul>
-	      </main>
-	      </div>
-	      )
-	}
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Exercices />);
-    </script>
+
 </body>
 
 </html>
