@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Exercices IPv6</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Récupération de l'utilisateur stocké en session
+        const user = JSON.parse(sessionStorage.getItem('user'));
+
+        function Navbar() {
+            return (
+                <nav className="navbar">
+                    <ul className="nav-links">
+                        <li><a href="/exercices">Exercices</a></li>
+                        <li><a href="/profile">Profil</a></li>
+                        {user && user.role === 'admin' && (
+                            <li><a href="/admin">Panneau Administrateur</a></li>
+                        )}
+                    </ul>
+                </nav>
+            );
+        }
+
+        function Profile() {
+            const [progress, setProgress] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+
+            React.useEffect(() => {
+                if (user && user.id) {
+                    fetch(`http://localhost:3000/api/getProgress?id=${user.id}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            // Sécurisation du format de données (Tableau attendu par React)
+                            if (Array.isArray(data)) {
+                                setProgress(data);
+                            } else if (data && typeof data === 'object') {
+                                setProgress([data]);
+                            } else {
+                                setProgress([]);
+                            }
+                            setLoading(false);
+                        })
+                        .catch((error) => {
+                            console.error("Erreur lors de la récupération de la progression :", error);
+                            setLoading(false);
+                        });
+                } else {
+                    setLoading(false);
+                }
+            }, []);
+
+            if (!user) {
+                return (
+                    <div>
+                        <Navbar />
+                        <main className="container">
+                            <h1>Accès Interdit</h1>
+                            <p>Veuillez vous connecter pour accéder à votre profil.</p>
+                        </main>
+                    </div>
+                );
+            }
+
+            return (
+                <div>
+                    <Navbar />
+                    <main className="container">
+                        <h1>Bonjour {user.name || user.username}</h1>
+                        <p>Mail Universitaire : {user.email}</p>
+
+                        <hr />
+
+                        <h2>Votre progression</h2>
+
+                        {loading ? (
+                            <p>Chargement des accomplissements...</p>
+                        ) : progress.length > 0 ? (
+                            <ul className="progress-list">
+                                {progress.map((item, index) => (
+                                    <li key={index} className="progress-item">
+                                        <pre>{JSON.stringify(item, null, 2)}</pre>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>Aucun exercice accompli pour le moment.</p>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Profile />);
+    </script>
+</body>
+
+</html>

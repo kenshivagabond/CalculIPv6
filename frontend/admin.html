@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Gestion des Utilisateurs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            max-width: 400px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Panneau d'Administration</h1>
+
+    <h2>Créer un nouvel utilisateur</h2>
+    <form id="register-form">
+        <label for="username">Nom d'utilisateur :</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="email">Adresse Email :</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Mot de passe :</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="role">Rôle :</label>
+        <select id="role" name="role">
+            <option value="user">Utilisateur</option>
+            <option value="admin">Administrateur</option>
+        </select>
+
+        <button type="submit">Créer l'utilisateur</button>
+    </form>
+
+    <h2>Liste des utilisateurs</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom d'utilisateur</th>
+                <th>Email</th>
+                <th>Rôle</th>
+            </tr>
+        </thead>
+        <tbody id="users-table-body">
+            <!-- Les utilisateurs seront insérés ici dynamiquement -->
+        </tbody>
+    </table>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/admin';
+
+        // Charger la liste des utilisateurs
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_URL}/users`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include' // Transmet les cookies/session au backend
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur serveur (${response.status})`);
+                }
+
+                const users = await response.json();
+                const tableBody = document.getElementById('users-table-body');
+                tableBody.innerHTML = '';
+
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.id || user._id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td>${user.role}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs :', error);
+                alert('Erreur lors de la récupération des utilisateurs');
+            }
+        }
+
+        // Ajouter un nouvel utilisateur
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include', // Transmet les cookies/session
+                    body: JSON.stringify({ username, email, password, role })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur serveur (${response.status})`);
+                }
+
+                alert('Utilisateur créé avec succès !');
+                document.getElementById('register-form').reset();
+                loadUsers(); // Rafraîchir le tableau
+            } catch (error) {
+                console.error('Échec de la création de l\'utilisateur :', error);
+                alert('Échec de la création de l\'utilisateur');
+            }
+        });
+
+        // Charger la liste au premier chargement de la page
+        loadUsers();
+    </script>
+</body>
+</html>
