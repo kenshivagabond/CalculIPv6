@@ -14,8 +14,8 @@ class ExercicesDao {
 
     async progress(id_utilisateur) {
 	const res = await db.query('SELECT * FROM progress WHERE id_utilisateur = ?', [id_utilisateur]);
-	console.log(res[0][0]);
-	return res[0][0];
+	console.log(res[0]);
+	return res[0];
 	
     }
 
