@@ -28,6 +28,10 @@ app.get('/profile', (req,res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'profile.html'));
 });
 
+app.get('/admin' , (req,res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'admin.html'));
+});
+
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });
