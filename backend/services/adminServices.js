@@ -7,7 +7,7 @@ class adminServices {
     }
 
     async register(username,email,password,role) {
-        return this.userDAO.register(username,password,role);
+        return this.userDAO.register(username,email,password,role);
     }
 
     async deleteUser(username) {
