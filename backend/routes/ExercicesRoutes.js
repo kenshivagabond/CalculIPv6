@@ -21,6 +21,34 @@ router.get('/getProgress', async (req, res) => {
 	}
 });
 
+router.post('/addProgress', async (req, res) => {
+    const { exercice_id , user_id } = req.body;
+    const addProgress = await ExercicesServices.addProgress(exercices_id , id_utilisateur);
+    if (addProgress) {
+        res.json(addProgress);
+    } else {
+        res.status(401).json({ error : 'Invalid credentials' });
+    }
+});
+
+router.get('/generateAnIp', async (req, res) => {
+    const ip = await ExercicesService.GenerateAddressIPV6();
+    if (ip) {
+        res.join(ip);
+    } else {
+        res.status(401).json({ error : 'No Ip' });
+
+}
+
+router.post('/InputIpv6IsCorrect' , async (req, res) => {
+    const { input } = req.body;
+    const answer = await ExercicesServices.IPv6isCorrect(input)
+    if (answer} {
+        res.json(answer);
+    } else {
+        res.status(401).json({ error : 'No Answer' });
+}
+
 
 module.exports = router;
 

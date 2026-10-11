@@ -14,6 +14,11 @@ class ExercicesServices {
 	return this.exercicesDAO.progress(user_id);
     }
 
+    async GenerateAdressIPV6(){
+        return this.exercicesDAO.GenerateAdressIPV6();
+    }
+
+    
 
 
 

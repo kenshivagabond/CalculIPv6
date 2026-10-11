@@ -19,6 +19,11 @@ class ExercicesDao {
 	
     }
 
+    async addProgress(exercices_id , id_utilisateur) {
+        const [result] = await db.query('INSERT INTO progress (id_utilisateur,id_exercice,is_correct,did_at) VALUES (?,?,?,CURRENT_TIMESTAMP)', [id_utilisateur, exercices_id, is_correct=True]);
+
+    }
+
     async IPv6isCorrect(ipv6Address) {
         return IPv6Address.isValid(ipv6Address);
     }
