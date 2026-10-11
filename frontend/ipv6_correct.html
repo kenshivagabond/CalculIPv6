@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice IPv6 - Validation</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const user = JSON.parse(sessionStorage.getItem('user'));
+
+        function Navbar() {
+            return (
+                <nav className="navbar">
+                    <ul className="nav-links">
+                        <li><a href="/exercices">Exercices</a></li>
+                        <li><a href="/profile">Profil</a></li>
+                        {user && user.role === 'admin' && (
+                            <li><a href="/admin">Panneau Administrateur</a></li>
+                        )}
+                    </ul>
+                </nav>
+            );
+        }
+
+        function Ipv6CorrectExercise() {
+            const [inputVal, setInputVal] = React.useState('');
+            const [feedback, setFeedback] = React.useState(null);
+            const [isCorrect, setIsCorrect] = React.useState(false);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setFeedback(null);
+
+                try {
+                    // 1. Vérification de la validité de l'IPv6 via l'API
+                    const res = await fetch('http://localhost:3000/api/InputIpv6IsCorrect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ input: inputVal })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data) {
+                        setIsCorrect(true);
+                        setFeedback("Bravo ! Votre adresse IPv6 est correcte.");
+
+                        // 2. Enregistrement dans la progression avec l'exercice_id défini à 1
+                        if (user && user.id) {
+                            await fetch('http://localhost:3000/api/addProgress', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ exercice_id: 1, user_id: user.id })
+                            });
+                        }
+                    } else {
+                        setIsCorrect(false);
+                        setFeedback(
+                            "Adresse IPv6 incorrecte. Rappel des règles :\n" +
+                            "1. Une adresse IPv6 est composée de blocs hexadécimaux séparés par des deux-points (:).\n" +
+                            "2. Le double deux-points (::) ne peut être utilisé qu'une seule fois pour condenser les blocs de zéros.\n" +
+                            "3. Le masque CIDR (si présent) doit être un entier valide compris entre 0 et 128 maximum."
+                        );
+                    }
+                } catch (err) {
+                    console.error(err);
+                    setIsCorrect(false);
+                    setFeedback("Erreur de communication avec le serveur.");
+                }
+            };
+
+            return (
+                <div>
+                    <Navbar />
+                    <main className="container" style={{ padding: '20px' }}>
+                        <h1>Exercice 1 : Validation d'adresse IPv6</h1>
+                        <p>Entrez une adresse IPv6 (avec ou sans CIDR) pour tester sa validité :</p>
+
+                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '450px' }}>
+                            <input
+                                type="text"
+                                placeholder="ex: 2001:db8::1 ou 2001:db8::/64"
+                                value={inputVal}
+                                onChange={(e) => setInputVal(e.target.value)}
+                                required
+                                style={{ padding: '8px' }}
+                            />
+                            <button type="submit" style={{ padding: '8px', cursor: 'pointer' }}>Valider</button>
+                        </form>
+
+                        {feedback && (
+                            <div style={{
+                                marginTop: '20px',
+                                padding: '15px',
+                                borderRadius: '5px',
+                                backgroundColor: isCorrect ? '#d4edda' : '#f8d7da',
+                                color: isCorrect ? '#155724' : '#721c24',
+                                whiteSpace: 'pre-line'
+                            }}>
+                                <strong>{isCorrect ? "Succès !" : "Explication :"}</strong>
+                                <p>{feedback}</p>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Ipv6CorrectExercise />);
+    </script>
+</body>
+
+</html>

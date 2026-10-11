@@ -9,13 +9,42 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="stylesheet" href="/style.css">
+    <style>
+        .progress-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-table th, .progress-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e4e8;
+            text-align: left;
+            color: #333;
+            font-size: 14px;
+        }
+        .progress-table th {
+            background-color: #f6f8fa;
+            color: #24292e;
+            font-weight: 600;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #e6ffed;
+            color: #22863a;
+        }
+    </style>
 </head>
 
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        // Récupération de l'utilisateur stocké en session
         const user = JSON.parse(sessionStorage.getItem('user'));
 
         function Navbar() {
@@ -41,7 +70,6 @@
                     fetch(`http://localhost:3000/api/getProgress?id=${user.id}`)
                         .then((response) => response.json())
                         .then((data) => {
-                            // Sécurisation du format de données (Tableau attendu par React)
                             if (Array.isArray(data)) {
                                 setProgress(data);
                             } else if (data && typeof data === 'object') {
@@ -64,7 +92,7 @@
                 return (
                     <div>
                         <Navbar />
-                        <main className="container">
+                        <main className="container" style={{ padding: '20px' }}>
                             <h1>Accès Interdit</h1>
                             <p>Veuillez vous connecter pour accéder à votre profil.</p>
                         </main>
@@ -75,26 +103,42 @@
             return (
                 <div>
                     <Navbar />
-                    <main className="container">
-                        <h1>Bonjour {user.name || user.username}</h1>
-                        <p>Mail Universitaire : {user.email}</p>
+                    <main className="container" style={{ padding: '20px' }}>
+                        <h1>{user.name || user.username}</h1>
+                        <p style={{ color: '#666' }}>{user.email}</p>
 
-                        <hr />
+                        <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid #eaeaea' }} />
 
-                        <h2>Votre progression</h2>
+                        <h2>Exercices validés</h2>
 
                         {loading ? (
-                            <p>Chargement des accomplissements...</p>
+                            <p style={{ color: '#666' }}>Chargement...</p>
                         ) : progress.length > 0 ? (
-                            <ul className="progress-list">
-                                {progress.map((item, index) => (
-                                    <li key={index} className="progress-item">
-                                        <pre>{JSON.stringify(item, null, 2)}</pre>
-                                    </li>
-                                ))}
-                            </ul>
+                            <table className="progress-table">
+                                <thead>
+                                    <tr>
+                                        <th>Exercice</th>
+                                        <th>Statut</th>
+                                        <th>Date de validation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {progress.map((item, index) => {
+                                        const exerciceId = item.exercice_id !== undefined ? item.exercice_id : item.id_exercice;
+                                        return (
+                                            <tr key={index}>
+                                                <td>Exercice {exerciceId}</td>
+                                                <td>
+                                                    <span className="status-badge">Validé</span>
+                                                </td>
+                                                <td>{item.did_at ? new Date(item.did_at).toLocaleString() : '-'}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
                         ) : (
-                            <p>Aucun exercice accompli pour le moment.</p>
+                            <p style={{ color: '#666' }}>Aucun exercice validé pour le moment.</p>
                         )}
                     </main>
                 </div>

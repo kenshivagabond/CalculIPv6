@@ -20,7 +20,8 @@ class ExercicesDao {
     }
 
     async addProgress(exercices_id , id_utilisateur) {
-        const [result] = await db.query('INSERT INTO progress (id_utilisateur,id_exercice,is_correct,did_at) VALUES (?,?,?,CURRENT_TIMESTAMP)', [id_utilisateur, exercices_id, is_correct=True]);
+        const result = await db.query('INSERT OR IGNORE INTO progress (id_utilisateur,id_exercice,is_correct,did_at) VALUES (?,?,1,CURRENT_TIMESTAMP)', [id_utilisateur, exercices_id]);
+        return result;
 
     }
 
