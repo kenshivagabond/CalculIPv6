@@ -33,8 +33,12 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'admin.html'));
 });
 
-app.get('/exercices/0', (req, res) => {
+app.get('/exercices/1', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'ipv6_correct.html'));
+});
+
+app.get('/exercices/2', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend' , 'ipv6_randomize.html'));
 });
 
 app.listen(PORT, () => {

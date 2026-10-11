@@ -26,6 +26,14 @@ class ExercicesServices {
         return this.exercicesDAO.addProgress(exercices_id , id_utilisateur);
     }
 
+    async GenerateFalseiP(){
+        return this.exercicesDAO.GenerateFalseiP();
+    }
+
+    async CorrectIPOrNot(ip_address, studentAnswer){
+        return this.exercicesDAO.CorrectIPOrNot(ip_address, studentAnswer);
+    }
+
     
 
 

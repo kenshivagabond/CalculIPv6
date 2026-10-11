@@ -41,6 +41,15 @@ router.get('/generateAnIp', async (req, res) => {
     }
 });
 
+router.get('/RandomizeIp' , async (req ,res) => {
+    const ip = await ExercicesServices.GenerateFalseiP();
+    if (ip) {
+        res.json(ip);
+    } else {
+        res.status(401).json({ error : 'No Ip' });
+    }
+});
+
 router.post('/InputIpv6IsCorrect' , async (req, res) => {
     const { input } = req.body;
     const answer = await ExercicesServices.IPv6isCorrect(input);
@@ -50,6 +59,17 @@ router.post('/InputIpv6IsCorrect' , async (req, res) => {
         res.status(401).json({ error : 'No Answer' });
 }
 });
+
+router.post('/OutputIpv6IsCorrect' , async (req, res) => {
+    const { ip , answer_student } = req.body;
+    const answer = await ExercicesServices.CorrectIPOrNot(ip, answer_student);
+    if (answer) {
+        res.json(answer);
+    } else {
+        res.status(401).json({ error : 'No Answer' });
+    }
+});
+
 
 
 module.exports = router;

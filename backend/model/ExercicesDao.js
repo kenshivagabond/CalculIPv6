@@ -2,6 +2,7 @@ const db = require("../config/db.js")
 const Exercice = require("./Exercices.js")
 const IPv6Address = require('ip-address').Address6;
 const ipaddr = require('ipaddr.js');
+const crypto = require('crypto');
 
 class ExercicesDao {
 
@@ -33,10 +34,10 @@ class ExercicesDao {
         const blocks = [];
 
         for (let i = 0; i < 8; i++) {
-            blocks.push(bin2hex(random_bytes(2)));
+            blocks.push(crypto.randomBytes(2).toString('hex'));
         }
 
-        return blocks.toString() + "/" + Math.floor(Math.random() * 128 + 1).toString()
+        return blocks.join(':') + "/" + Math.floor(Math.random() * 128 + 1).toString()
     }
 
     async networkAddressTrueOrFalse(generateAddress, studentAnswer) {
@@ -55,7 +56,7 @@ class ExercicesDao {
         const typesFalseExercices = ['invalid_char', 'too_much_block', 'double_colon', 'missing_block', 'valid_ip'];
         const random_type = typesFalseExercices[Math.floor(Math.random() * typesFalseExercices.length)];
         const letters = 'abcdefghijklmnopqrstuvwxyz';
-        const randomblock = bin2hex(random_bytes(2));
+        const randomblock = crypto.randomBytes(2).toString('hex');
 
         switch (random_type) {
             case 'invalid_char': {
@@ -85,11 +86,11 @@ class ExercicesDao {
             case 'valid_ip':
                 return generated_ip_address;
         }
-        return { generated_ip_address: generated_ip_address, typeExercice: random_type };
     }
 
     async CorrectIPOrNot(ip_address, studentAnswer) {
-        if (this.IPv6isCorrect(ip_address) == studentAnswer) {
+        const isValid = await this.IPv6isCorrect(ip_address);
+        if (Boolean(isValid) === studentAnswer) {
             return true;
         }
         else {
