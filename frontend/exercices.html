@@ -3,68 +3,96 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>exercices</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercices - IPv6</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="stylesheet" href="/style.css">
+    <style>
+        .exercise-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.2s;
+        }
+        .exercise-card:hover {
+            border-color: #007bff;
+        }
+        .exercise-info h3 {
+            font-size: 18px;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+        .exercise-info p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .btn-access {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        .btn-access:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
+        const user = JSON.parse(sessionStorage.getItem('user'));
 
-	const user = JSON.parse(sessionStorage.getItem('user'));
         function Navbar() {
             return (
                 <nav className="navbar">
                     <ul className="nav-links">
                         <li><a href="/exercices">Exercices</a></li>
-			{ user ? (
-                        <li><a href="/profile">Profil</a></li> ) : (
-			<li><a href="/login">Se connecter</a></li>)}
-			{user && user.role === 'admin' && (
-			<li><a href="/admin"> panneau Administrateur</a></li>)}
+                        <li><a href="/profile">Profil</a></li>
+                        {user && user.role === 'admin' && (
+                            <li><a href="/admin">Panneau Administrateur</a></li>
+                        )}
                     </ul>
                 </nav>
             );
         }
 
-	function Exercices() {
-    const [exercices, setExercices] = React.useState([]); // de ce que j'ai compris de ce truc il est question de mettre la page en continue à jour setExercices modifie en continue (et il faut l'utiliser pour toute modif)
-    const gotoexo = (index) => {window.location.href = `/exercices/${index}`}
+        function Exercices() {
+            return (
+                <div>
+                    <Navbar />
+                    <main className="container">
+                        <h1>Exercices</h1>
+                        <p style={{ color: '#6b7280', marginTop: '5px' }}>Sélectionnez un exercice pour vous entraîner.</p>
 
-    React.useEffect(() => {
-        fetch("http://localhost:3000/api/getExercices")
-            .then((response) => response.json())
-            .then((data) => { setExercices(data); }) // utilisation de setExercices ici
-            .catch((error) => console.log(error));
-    }, []);
+                        <div className="exercise-card">
+                            <div className="exercise-info">
+                                <h3>Exercice 1 : Validation d'une adresse IPv6</h3>
+                                <p>Testez la validité syntaxique d'une adresse IPv6 avec ou sans masque CIDR.</p>
+                            </div>
+                            <a href="/exercices/0" className="btn-access">Accéder</a>
+                        </div>
+                    </main>
+                </div>
+            );
+        }
 
-    return (
-        <div>
-            <Navbar />
-            <main className="container">
-                <h1>Exercices :</h1>
-                <ul>
-                    {exercices.map((item, index) => (
-                        <li key={index}>
-                            <h2>{item.title}</h2>
-                            <br />
-                            <span>{item.description}</span>
-                            <button onClick={() => gotoexo(index)}>Accéder</button>
-                        </li>
-                    	))}
-                	</ul>
-           	 </main>
-        	</div>
-     	);
-     }
-
-     const root = ReactDOM.createRoot(document.getElementById('root'));
-     root.render(<Exercices />);
-
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Exercices />);
     </script>
 </body>
 
