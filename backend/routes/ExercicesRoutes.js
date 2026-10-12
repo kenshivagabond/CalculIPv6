@@ -32,7 +32,7 @@ router.post('/addProgress', async (req, res) => {
 });
 
 router.get('/generateAnIp', async (req, res) => {
-    const ip = await ExercicesService.GenerateAddressIPV6();
+    const ip = await ExercicesServices.GenerateAddressIPV6();
     if (ip) {
         res.json(ip);
     } else {
@@ -69,6 +69,17 @@ router.post('/OutputIpv6IsCorrect' , async (req, res) => {
         res.status(401).json({ error : 'No Answer' });
     }
 });
+
+router.post('/NetworkAddress' , async (req,res) => {
+    const { ip , answer_student } = req.body;
+    const answer = await ExercicesServices.networkAddressTrueOrFalse(ip, answer_student);
+    if (answer) {
+        res.json(answer);
+        } else {
+            res.status(401).json({ error : 'No Answer' });
+        }
+});
+
 
 
 

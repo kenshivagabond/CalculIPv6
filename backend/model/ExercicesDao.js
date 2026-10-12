@@ -41,13 +41,14 @@ class ExercicesDao {
     }
 
     async networkAddressTrueOrFalse(generateAddress, studentAnswer) {
-        const answer = ipaddr.IPv6.networkAddressFromCIDR(generateAddress).toString();
-        return answer == studentAnswer;
+        const answer = ipaddr.IPv6.networkAddressFromCIDR(generateAddress).toNormalizedString();
+        const student = ipaddr.IPv6.parse(studentAnswer.split('/')[0]).toNormalizedString();
+        return answer == student;
     }
 
     async minimZero(generateAddress, studentAnswer) {
         const answer = ipaddr.parse(generateAddress).toRFC5952String();
-        return answer == studentAnswer;
+        return answer === studentAnswer;
     }
 
     async GenerateFalseiP() {

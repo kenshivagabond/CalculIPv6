@@ -14,7 +14,7 @@ class ExercicesServices {
 	return this.exercicesDAO.progress(user_id);
     }
 
-    async GenerateAdressIPV6(){
+    async GenerateAddressIPV6(){
         return this.exercicesDAO.GenerateAdressIPV6();
     }
 
@@ -32,6 +32,10 @@ class ExercicesServices {
 
     async CorrectIPOrNot(ip_address, studentAnswer){
         return this.exercicesDAO.CorrectIPOrNot(ip_address, studentAnswer);
+    }
+
+    async networkAddressTrueOrFalse(generateAddress, studentAnswer){
+        return this.exercicesDAO.networkAddressTrueOrFalse(generateAddress, studentAnswer);
     }
 
     
