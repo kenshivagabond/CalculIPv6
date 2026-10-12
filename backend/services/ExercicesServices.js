@@ -38,6 +38,10 @@ class ExercicesServices {
         return this.exercicesDAO.networkAddressTrueOrFalse(generateAddress, studentAnswer);
     }
 
+    async minimZero(generateAddress, studentAnswer){
+        return this.exercicesDAO.minimZero(generateAddress, studentAnswer);
+    }
+
     
 
 

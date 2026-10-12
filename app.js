@@ -45,6 +45,10 @@ app.get('/exercices/3', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend' , 'ipv6_network.html'));
 });
 
+app.get('/exercices/4', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend' , 'ipv6_minimzero.html'));
+});
+
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });

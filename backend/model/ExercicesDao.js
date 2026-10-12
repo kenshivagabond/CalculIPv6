@@ -47,8 +47,8 @@ class ExercicesDao {
     }
 
     async minimZero(generateAddress, studentAnswer) {
-        const answer = ipaddr.parse(generateAddress).toRFC5952String();
-        return answer === studentAnswer;
+        const answer = ipaddr.parse(generateAddress.split('/')[0]).toRFC5952String();
+        return answer === studentAnswer.trim().split('/')[0];
     }
 
     async GenerateFalseiP() {

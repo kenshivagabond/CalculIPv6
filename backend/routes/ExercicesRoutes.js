@@ -80,6 +80,16 @@ router.post('/NetworkAddress' , async (req,res) => {
         }
 });
 
+router.post('/minimZero' , async (req,res) => {
+    const { ip , answer_student } = req.body;
+    const answer = await ExercicesServices.minimZero(ip, answer_student);
+    if (answer) {
+        res.json(answer);
+        } else {
+            res.status(401).json({ error : 'No Answer' });
+        }
+});
+
 
 
 
