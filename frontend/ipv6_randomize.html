@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice - Vrai ou Faux IPv6</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const user = JSON.parse(sessionStorage.getItem('user'));
+
+        function Navbar() {
+            return (
+                <nav className="navbar">
+                    <ul className="nav-links">
+                        <li><a href="/exercices">Exercices</a></li>
+                        <li><a href="/profile">Profil</a></li>
+                        {user && user.role === 'admin' && (
+                            <li><a href="/admin">Panneau Administrateur</a></li>
+                        )}
+                    </ul>
+                </nav>
+            );
+        }
+
+        function RandomizeIpExercise() {
+            const [currentIp, setCurrentIp] = useState('');
+            const [feedback, setFeedback] = useState(null);
+            const [isCorrect, setIsCorrect] = useState(false);
+            const [loading, setLoading] = useState(true);
+
+            const fetchNewIp = () => {
+                setLoading(true);
+                setFeedback(null);
+                fetch('http://localhost:3000/api/RandomizeIp')
+                    .then(res => res.json())
+                    .then(data => {
+                        setCurrentIp(data);
+                        setLoading(false);
+                    })
+                    .catch(err => {
+                        console.error("Erreur lors de la récupération de l'IP :", err);
+                        setLoading(false);
+                    });
+            };
+
+            React.useEffect(() => {
+                fetchNewIp();
+            }, []);
+
+            const handleAnswer = async (answerStudent) => {
+                try {
+                    // Envoi de l'IP générée et du choix de l'étudiant à l'API backend
+                    const res = await fetch('http://localhost:3000/api/OutputIpv6IsCorrect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ip: currentIp, answer_student: answerStudent })
+                    });
+                    const data = await res.json();
+
+                    if (res.ok && data) {
+                        setIsCorrect(true);
+                        setFeedback("Bonne réponse ! Vous avez correctement identifié le statut de cette adresse.");
+
+                        // Enregistrement dans la progression de l'utilisateur (Exercice ID 2)
+                        if (user && user.id) {
+                            await fetch('http://localhost:3000/api/addProgress', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ exercices_id: 2, user_id: user.id })
+                            });
+                        }
+                    } else {
+                        setIsCorrect(false);
+                        setFeedback(
+                            "Mauvaise réponse.\n\n" +
+                            "Règles et erreurs possibles d'une adresse IPv6 :\n" +
+                            "1. Composée de blocs hexadécimaux (0-9, a-f) séparés par des deux-points (:).\n" +
+                            "2. Aucun caractère non hexadécimal toléré (pas de lettres de g à z).\n" +
+                            "3. Le double deux-points (::) ne peut être présent qu'une seule fois.\n" +
+                            "4. Le nombre de blocs et le format global doivent respecter la structure standard."
+                        );
+                    }
+                } catch (err) {
+                    console.error("Erreur lors de la validation :", err);
+                }
+            };
+
+            return (
+                <div>
+                    <Navbar />
+                    <main className="container">
+                        <div className="login-card" style={{ maxWidth: '600px', margin: '40px auto' }}>
+                            <h2>Exercice : Vrai ou Faux</h2>
+                            <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '5px' }}>
+                                Analysez l'adresse IPv6 générée ci-dessous et déterminez si elle est valide.
+                            </p>
+
+                            {loading ? (
+                                <p style={{ textAlign: 'center', marginTop: '30px', color: '#6b7280' }}>Génération d'une adresse...</p>
+                            ) : (
+                                <>
+                                    <div style={{
+                                        fontFamily: 'monospace',
+                                        backgroundColor: '#f8fafc',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '6px',
+                                        padding: '15px',
+                                        fontSize: '18px',
+                                        textAlign: 'center',
+                                        margin: '25px 0',
+                                        color: '#1f2937',
+                                        wordBreak: 'break-all'
+                                    }}>
+                                        {currentIp}
+                                    </div>
+
+                                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                                        <button 
+                                            onClick={() => handleAnswer(true)} 
+                                            className="btn-primary" 
+                                            style={{ backgroundColor: '#10b981', marginTop: 0 }}
+                                        >
+                                            Vrai (Valide)
+                                        </button>
+                                        <button 
+                                            onClick={() => handleAnswer(false)} 
+                                            className="btn-primary" 
+                                            style={{ backgroundColor: '#ef4444', marginTop: 0 }}
+                                        >
+                                            Faux (Invalide)
+                                        </button>
+                                    </div>
+
+                                    {feedback && (
+                                        <div style={{
+                                            marginTop: '20px',
+                                            padding: '15px',
+                                            borderRadius: '6px',
+                                            fontSize: '14px',
+                                            whiteSpace: 'pre-line',
+                                            backgroundColor: isCorrect ? '#dcfce7' : '#fee2e2',
+                                            color: isCorrect ? '#166534' : '#991b1b',
+                                            border: `1px solid ${isCorrect ? '#bbf7d0' : '#fecaca'}`
+                                        }}>
+                                            <strong>{isCorrect ? "Succès" : "Explication"}</strong>
+                                            <p style={{ marginTop: '5px' }}>{feedback}</p>
+                                        </div>
+                                    )}
+
+                                    <button 
+                                        onClick={fetchNewIp} 
+                                        style={{
+                                            width: '100%',
+                                            marginTop: '20px',
+                                            padding: '10px',
+                                            backgroundColor: '#e5e7eb',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            cursor: 'pointer',
+                                            fontWeight: '500',
+                                            color: '#374151'
+                                        }}
+                                    >
+                                        Tester une autre adresse
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </main>
+                </div>
+            );
+        }
+
+        const { useState } = React;
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RandomizeIpExercise />);
+    </script>
+</body>
+
+</html>

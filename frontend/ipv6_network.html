@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice - Adresse Réseau IPv6 (CIDR)</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const user = JSON.parse(sessionStorage.getItem('user'));
+
+        function Navbar() {
+            return (
+                <nav className="navbar">
+                    <ul className="nav-links">
+                        <li><a href="/exercices">Exercices</a></li>
+                        <li><a href="/profile">Profil</a></li>
+                        {user && user.role === 'admin' && (
+                            <li><a href="/admin">Panneau Administrateur</a></li>
+                        )}
+                    </ul>
+                </nav>
+            );
+        }
+
+        function NetworkAddressExercise() {
+            const [currentIp, setCurrentIp] = useState('');
+            const [studentAnswer, setStudentAnswer] = useState('');
+            const [feedback, setFeedback] = useState(null);
+            const [isCorrect, setIsCorrect] = useState(false);
+            const [loading, setLoading] = useState(true);
+
+            // Récupération d'une adresse IPv6 avec CIDR via la route /api/generateAnIp
+            const fetchNewIp = () => {
+                setLoading(true);
+                setFeedback(null);
+                setStudentAnswer('');
+                fetch('http://localhost:3000/api/generateAnIp')
+                    .then(res => res.json())
+                    .then(data => {
+                        setCurrentIp(data);
+                        setLoading(false);
+                    })
+                    .catch(err => {
+                        console.error("Erreur lors de la récupération de l'IP :", err);
+                        setLoading(false);
+                    });
+            };
+
+            React.useEffect(() => {
+                fetchNewIp();
+            }, []);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                if (!studentAnswer.trim()) return;
+
+                try {
+                    // Envoi de l'IP générée (contenant le CIDR) et de la réponse de l'étudiant à la route /api/NetworkAddress
+                    const res = await fetch('http://localhost:3000/api/NetworkAddress', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ip: currentIp, answer_student: studentAnswer.trim() })
+                    });
+                    const data = await res.json();
+
+                    if (res.ok && data) {
+                        setIsCorrect(true);
+                        setFeedback("Bonne réponse ! Vous avez correctement déterminé l'adresse réseau.");
+
+                        // Enregistrement dans la progression (Exemple ID 3 pour cet exercice)
+                        if (user && user.id) {
+                            await fetch('http://localhost:3000/api/addProgress', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ exercices_id: 3, user_id: user.id })
+                            });
+                        }
+                    } else {
+                        setIsCorrect(false);
+                        setFeedback(
+                            "Mauvaise réponse.\n\n" +
+                            "Règles et explications pour l'adresse réseau IPv6 :\n" +
+                            "1. Le préfixe CIDR (ex: /64) indique le nombre de bits réseau à conserver.\n" +
+                            "2. Tous les bits situés après la longueur du préfixe doivent être mis à zéro.\n" +
+                            "3. Vérifiez le formatage de votre adresse (notation hexadécimale standard avec les séparateurs deux-points)."
+                        );
+                    }
+                } catch (err) {
+                    console.error("Erreur lors de la validation :", err);
+                }
+            };
+
+            return (
+                <div>
+                    <Navbar />
+                    <main className="container">
+                        <div className="login-card" style={{ maxWidth: '600px', margin: '40px auto' }}>
+                            <h2>Exercice : Adresse Réseau IPv6</h2>
+                            <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '5px' }}>
+                                À partir de l'adresse IPv6 et de son CIDR ci-dessous, trouvez l'adresse réseau correspondante :
+                            </p>
+
+                            {loading ? (
+                                <p style={{ textAlign: 'center', marginTop: '30px', color: '#6b7280' }}>Génération d'une adresse...</p>
+                            ) : (
+                                <>
+                                    <div style={{
+                                        fontFamily: 'monospace',
+                                        backgroundColor: '#f8fafc',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '6px',
+                                        padding: '15px',
+                                        fontSize: '18px',
+                                        textAlign: 'center',
+                                        margin: '25px 0',
+                                        color: '#1f2937',
+                                        wordBreak: 'break-all'
+                                    }}>
+                                        {currentIp}
+                                    </div>
+
+                                    <form onSubmit={handleSubmit}>
+                                        <div style={{ marginBottom: '15px' }}>
+                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '5px' }}>
+                                                Adresse réseau :
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                className="input-field"
+                                                placeholder="ex: 2001:db8::"
+                                                value={studentAnswer}
+                                                onChange={(e) => setStudentAnswer(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+
+                                        <button type="submit" className="btn-primary" style={{ marginTop: 0 }}>
+                                            Valider
+                                        </button>
+                                    </form>
+
+                                    {feedback && (
+                                        <div style={{
+                                            marginTop: '20px',
+                                            padding: '15px',
+                                            borderRadius: '6px',
+                                            fontSize: '14px',
+                                            whiteSpace: 'pre-line',
+                                            backgroundColor: isCorrect ? '#dcfce7' : '#fee2e2',
+                                            color: isCorrect ? '#166534' : '#991b1b',
+                                            border: `1px solid ${isCorrect ? '#bbf7d0' : '#fecaca'}`
+                                        }}>
+                                            <strong>{isCorrect ? "Succès" : "Explication"}</strong>
+                                            <p style={{ marginTop: '5px' }}>{feedback}</p>
+                                        </div>
+                                    )}
+
+                                    <button 
+                                        onClick={fetchNewIp} 
+                                        style={{
+                                            width: '100%',
+                                            marginTop: '20px',
+                                            padding: '10px',
+                                            backgroundColor: '#e5e7eb',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            cursor: 'pointer',
+                                            fontWeight: '500',
+                                            color: '#374151'
+                                        }}
+                                    >
+                                        Tester une autre adresse
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </main>
+                </div>
+            );
+        }
+
+        const { useState } = React;
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<NetworkAddressExercise />);
+    </script>
+</body>
+
+</html>
