@@ -111,8 +111,8 @@ class ExercicesDao {
     }
 
     async to4(ipv6Address, studentAnswer) {
-        const answer = ipaddr.parse(ipv6Address).toIPv4Address().toString();
-        return answer == studentAnswer;
+        const answer = ipaddr.parse(ipv6Address.split('/')[0]).toIPv4Address().toString();
+        return answer == studentAnswer.trim().split('/')[0];
     }
 
     async to6(ipv4Address, studentAnswer) {
@@ -132,11 +132,7 @@ class ExercicesDao {
 
     async ipv4MappedIp() {
         const ipv4 = await this.generateiPv4();
-        const mapped = ipaddr.IPv4.parse(ipv4);
-
-        const ipv6 = ipaddr.IPv6.fromIPv4MappedAddress(mapped);
-
-        return ipv6.toString() + '/96';
+        return `::ffff:${ipv4}/96`;
     }
 
 
@@ -144,7 +140,5 @@ class ExercicesDao {
 
 
 
-
 }
-
 module.exports = new ExercicesDao();
