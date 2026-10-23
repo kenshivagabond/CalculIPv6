@@ -116,8 +116,8 @@ class ExercicesDao {
     }
 
     async to6(ipv4Address, studentAnswer) {
-        const answer = ipaddr.parse(ipv4Address).toIPv4MappedAddress().toString();
-        return answer == studentAnswer;
+        const answer = ipaddr.parse(ipv4Address.split('/')[0]).toIPv4MappedAddress().toString();
+        return answer == studentAnswer.trim().split('/')[0];
     }
 
     async range(ipv6Address, studentAnswer) {

@@ -118,6 +118,17 @@ router.post('/convertto4' , async (req,res) => {
         }
 });
 
+router.post('/convertto6' , async (req,res) => {
+    const { ip , answer_student } = req.body;
+    const answer = await ExercicesServices.to6(ip, answer_student);
+    if (answer) {
+        res.json(answer);
+        } else {
+            res.status(401).json({ error : 'No Answer' });
+
+        }
+}); 
+
 
 
 
