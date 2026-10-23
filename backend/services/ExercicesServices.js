@@ -58,6 +58,14 @@ class ExercicesServices {
         return this.exercicesDAO.ipv4MappedIp();
     }
 
+    async range(ipv6Address, studentAnswer){
+        return this.exercicesDAO.range(ipv6Address, studentAnswer);
+    }
+
+    async prebuildIp(){
+        return this.exercicesDAO.prebuildIp();
+    }
+
    
 
     

@@ -57,6 +57,10 @@ app.get('/exercices/6', (req,res) => {
     res.sendFile(path.join(__dirname, 'frontend' ,'ipv4_to6.html'));
 });
 
+app.get('/exercices/7', (req,res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'ipv6_range.html'));
+});
+
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });

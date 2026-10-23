@@ -127,7 +127,27 @@ router.post('/convertto6' , async (req,res) => {
             res.status(401).json({ error : 'No Answer' });
 
         }
-}); 
+});
+
+router.post('/range' , async (req,res) => {
+    const { ip , answer_student } = req.body;
+    const answer = await ExercicesServices.range(ip, answer_student);
+    if (answer) {
+        res.json(answer);
+        } else {
+            res.status(401).json({ error : 'No Answer' });
+        }
+});
+
+router.get('/prebuildIp' , async (req,res) => {
+    const ip = await ExercicesServices.prebuildIp();
+    if (ip) {
+        res.json(ip)
+        } else {
+            res.status(401).json({ error : 'No Ip' });
+        }
+
+});
 
 
 

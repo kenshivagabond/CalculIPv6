@@ -121,7 +121,7 @@ class ExercicesDao {
     }
 
     async range(ipv6Address, studentAnswer) {
-        const answer = ipaddr.parse(ipv6Address).range();
+        const answer = ipaddr.parse(ipv6Address.split('/')[0]).range();
         return answer == studentAnswer;
     }
 
@@ -133,6 +133,23 @@ class ExercicesDao {
     async ipv4MappedIp() {
         const ipv4 = await this.generateiPv4();
         return `::ffff:${ipv4}/96`;
+    }
+
+    async prebuildIp() {
+        const iP = [
+            "2001:db8::1",          // unicast
+            "::1",                  // loopback
+            "fe80::1ff:fe00:3",     // linkLocal
+            "fc00::1",              // uniqueLocal
+            "ff00::1",              // multicast
+            "::"                    // unspecified
+        ];
+
+        const randomIndex = Math.floor(Math.random() * iP.length);
+        const selectedIp = iP[randomIndex];
+
+        return selectedIp
+
     }
 
 
