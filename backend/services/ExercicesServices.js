@@ -42,6 +42,24 @@ class ExercicesServices {
         return this.exercicesDAO.minimZero(generateAddress, studentAnswer);
     }
 
+    async generateiPv4(){
+        return this.exercicesDAO.generateiPv4();
+    }
+
+    async to4(ipv6Address, studentAnswer){
+        return this.exercicesDAO.to4(ipv6Address, studentAnswer);
+    }
+
+    async to6(ipv4Address, studentAnswer){
+        return this.exercicesDAO.to6(ipv4Address, studentAnswer);
+    }
+
+    async ipv4MappedIp(){
+        return this.exercicesDAO.ipv4MappedIp();
+    }
+
+   
+
     
 
 

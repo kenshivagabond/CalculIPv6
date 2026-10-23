@@ -130,6 +130,15 @@ class ExercicesDao {
         return answer == studentAnswer;
     }
 
+    async ipv4MappedIp() {
+        const ipv4 = await this.generateiPv4();
+        const mapped = ipaddr.IPv4.parse(ipv4);
+
+        const ipv6 = ipaddr.IPv6.fromIPv4MappedAddress(mapped);
+
+        return ipv6.toString() + '/96';
+    }
+
 
 
 

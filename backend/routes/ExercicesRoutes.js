@@ -90,6 +90,34 @@ router.post('/minimZero' , async (req,res) => {
         }
 });
 
+router.get('/random4' , async (req,res) => {
+    const ip = await ExercicesServices.generateiPv4();
+    if (ip) {
+        res.json(ip)
+    } else {
+        res.status(401).json({ error : 'No Ip' });
+    }
+});
+
+router.get('/randommapped' , async (req,res) => {
+    const ip = await ExercicesServices.ipv4MappedIp();
+    if (ip) {
+        res.json(ip)
+    } else {
+         res.status(401).json({ error : 'No Ip' });
+    }
+});
+
+router.post('/convertto4' , async (req,res) => {
+    const { ip , answer_student } = req.body;
+    const answer = await ExercicesServices.to4(ip, studentAnswer);
+    if (answer) {
+        res.json(answer); 
+        } else {
+            res.status(401).json({ error : 'No Answer' });
+        }
+});
+
 
 
 
