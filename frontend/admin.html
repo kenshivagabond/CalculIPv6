@@ -143,6 +143,15 @@
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
+            gap: 12px;
+        }
+        .badge-ok {
+            color: #155724;
+            font-weight: bold;
+        }
+        .badge-ko {
+            color: #721c24;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -228,11 +237,49 @@
         const API_URL = 'http://localhost:3000/api/admin';
         let usersCache = [];
 
+        // Optionnel : associer un id_exercice à un intitulé lisible
+        const EXERCICE_LABELS = {
+            7: 'QCM Type / Range IPv6'
+        };
+
         function showStatus(message, isError = false) {
             const banner = document.getElementById('status-banner');
             banner.textContent = message;
             banner.className = `status-banner ${isError ? 'status-error' : 'status-success'}`;
             banner.style.display = 'block';
+        }
+
+        function formatExerciceName(item) {
+            if (item.titre || item.title || item.nom) {
+                return item.titre || item.title || item.nom;
+            }
+            const exId = item.id_exercice ?? item.exercices_id ?? item.exercise_id;
+            if (exId !== undefined && exId !== null) {
+                return EXERCICE_LABELS[exId]
+                    ? `${EXERCICE_LABELS[exId]} (#${exId})`
+                    : `Exercice #${exId}`;
+            }
+            return 'Exercice inconnu';
+        }
+
+        function formatStatus(item) {
+            if (item.is_correct !== undefined && item.is_correct !== null) {
+                return Boolean(item.is_correct)
+                    ? '<span class="badge-ok">Réussi</span>'
+                    : '<span class="badge-ko">Échoué</span>';
+            }
+            if (item.completed !== undefined) {
+                return item.completed
+                    ? '<span class="badge-ok">Complété</span>'
+                    : '<span>En cours</span>';
+            }
+            return `<span>${item.status || 'Enregistré'}</span>`;
+        }
+
+        function formatDate(rawDate) {
+            if (!rawDate) return '';
+            const parsed = new Date(rawDate);
+            return Number.isNaN(parsed.getTime()) ? String(rawDate) : parsed.toLocaleString('fr-FR');
         }
 
         // Charger la liste des utilisateurs
@@ -249,16 +296,16 @@
                 }
 
                 const users = await response.json();
-                usersCache = users;
+                usersCache = Array.isArray(users) ? users : [];
                 const tableBody = document.getElementById('users-table-body');
                 tableBody.innerHTML = '';
 
-                users.forEach(user => {
+                usersCache.forEach(user => {
                     const row = document.createElement('tr');
                     const safeUsername = encodeURIComponent(user.username);
 
                     row.innerHTML = `
-                        <td>${user.id || user._id || ''}</td>
+                        <td>${user.id ?? user._id ?? ''}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -343,7 +390,7 @@
             const role = document.getElementById('edit-role').value;
 
             const payload = { username, email, role };
-            if (passwordInput) {
+            if (passwordInput.trim() !== '') {
                 payload.password = passwordInput;
             }
 
@@ -423,24 +470,24 @@
                 const items = Array.isArray(data) ? data : (data.progress || []);
 
                 if (Array.isArray(items) && items.length === 0) {
-                    content.innerHTML = '<p>Aucun exercice complété pour le moment.</p>';
+                    content.innerHTML = '<p>Aucun exercice effectué pour le moment.</p>';
                 } else if (Array.isArray(items) && items.length > 0) {
                     const ul = document.createElement('ul');
                     ul.className = 'progress-list';
+
                     items.forEach(item => {
                         const li = document.createElement('li');
-                        const exId = item.exercices_id ?? item.exercise_id ?? item.id ?? 'Exercice';
-                        const status = item.completed !== undefined
-                            ? (item.completed ? 'Complété' : 'En cours')
-                            : (item.status || 'Validé');
-                        const dateStr = item.created_at || item.date || '';
+                        const exName = formatExerciceName(item);
+                        const statusHtml = formatStatus(item);
+                        const dateStr = formatDate(item.did_at || item.created_at || item.date);
 
                         li.innerHTML = `
-                            <span><strong>Exercice #${exId}</strong> — ${status}</span>
+                            <span><strong>${exName}</strong> — ${statusHtml}</span>
                             <span>${dateStr}</span>
                         `;
                         ul.appendChild(li);
                     });
+
                     content.innerHTML = '';
                     content.appendChild(ul);
                 } else {

@@ -47,7 +47,7 @@ class UserDao extends User {
     }
 
     async viewProgress(username) {
-        const result = await db.query(
+        const rows = await db.query(
             `SELECT p.id_utilisateur, p.id_exercice, p.is_correct, p.did_at
             FROM progress p
             JOIN users u ON p.id_utilisateur = u.id
@@ -55,9 +55,7 @@ class UserDao extends User {
             ORDER BY p.did_at DESC`,
             [username]
         );
-
-        const rows = Array.isArray(result) && Array.isArray(result[0]) ? result[0] : result;
-        return Array.isArray(rows) ? rows : [];
+        return Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows;
     }
 
     async isAdmin(username) {
