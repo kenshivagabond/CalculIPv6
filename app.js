@@ -17,7 +17,7 @@ app.use('/api', authRouter);
 app.use('/api', ExercicesRouter);
 app.use('/api/admin', adminRouter);
 
-app.get('/login', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'login_page.html'));
 });
 

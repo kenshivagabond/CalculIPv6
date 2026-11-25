@@ -6,18 +6,15 @@ class UserDao extends User {
 
 
     async connection(username, password) {
-        
-	const users = await db.query("SELECT * FROM users WHERE username = ?", [username]);
-	
-        if (users && users.length > 0) {
-	    const user = users[0][0];
-	    console.log(user.hashed_password);
-            const isMatch = await bcrypt.compare(password, user.hashed_password);
-            if (isMatch) {
-                return user;
-            }
+        const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
+        const user = Array.isArray(rows) ? rows[0] : rows;
+
+        if (!user || !user.hashed_password) {
+            return null;
         }
-        return null;
+
+        const isMatch = await bcrypt.compare(password, user.hashed_password);
+        return isMatch ? user : null;
     }
 
     async hashPassword(password, saltRounds = 12) {
@@ -50,8 +47,17 @@ class UserDao extends User {
     }
 
     async viewProgress(username) {
-        const [result] = await db.query('SELECT * FROM progress WHERE username = ?', username)
-        return result;
+        const result = await db.query(
+            `SELECT p.id_utilisateur, p.id_exercice, p.is_correct, p.did_at
+            FROM progress p
+            JOIN users u ON p.id_utilisateur = u.id
+            WHERE u.username = ?
+            ORDER BY p.did_at DESC`,
+            [username]
+        );
+
+        const rows = Array.isArray(result) && Array.isArray(result[0]) ? result[0] : result;
+        return Array.isArray(rows) ? rows : [];
     }
 
     async isAdmin(username) {

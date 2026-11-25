@@ -48,4 +48,15 @@ router.get('/progress', async (req, res) => {
     }
 });
 
+router.post('/update', async (req, res) => {
+    try {
+        const {username,email,password,role} = req.body;
+        const update = await adminServices.updateUser(username,email,password,role);
+        res.status(201).json({ message: "Utilisateur mis à jour avec succès" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erreur lors de la mise à jour" });
+    }
+});
+
 module.exports = router;
